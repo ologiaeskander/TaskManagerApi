@@ -4,5 +4,5 @@ GET {{TaskManager_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###
-GET {{TaskManager_HostAddress}}/api/tasks/
+GET {{TaskManager_HostAddress}}/api/jobs/
 Accept: application/json

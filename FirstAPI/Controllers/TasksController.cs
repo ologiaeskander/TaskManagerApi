@@ -1,7 +1,7 @@
 ﻿using TaskManager.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Task = TaskManager.Models.Task;
+using Job = TaskManager.Models.Job;
 
 namespace TaskManager.Controllers
 {
@@ -11,15 +11,15 @@ namespace TaskManager.Controllers
     {
         //todo SQL commands go here, I think?
         [HttpGet]
-        public ActionResult<List<Task>> GetTasks() //todo the list thing is temporary
+        public ActionResult<List<Job>> GetTasks() //todo the list thing is temporary
         {
-            //return tasks
+            //return jobs
             return Ok(0); //todo also temporary
         }
         [HttpGet("{id}")]
-        public ActionResult<List<Task>> GetTaskById(int id) //todo the list thing is temporary
+        public ActionResult<List<Job>> GetTaskById(int id) //todo the list thing is temporary
         {
-            //Some SQL return where command to get specific tasks, etc...
+            //Some SQL return where command to get specific jobs, etc...
             return Ok(1); //todo also temporary
         }
         //[HttpPost] for adding

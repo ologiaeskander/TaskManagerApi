@@ -5,7 +5,7 @@ namespace TaskManager.Models
     public enum Status { ToDo, InProgress, Done }
     public enum Priority { Low, Medium, High }
 
-    public class Task
+    public class Job
     {
         public int Id { get; set; }
         [Required]
@@ -14,7 +14,7 @@ namespace TaskManager.Models
         public Status Status { get; set; }
         public Priority Priority { get; set; }
         public int AssignedToUserId { get; set; }
-        public int? ProjectId { get; set; } //nullable in case of rogue/general tasks
+        public int? ProjectId { get; set; } //nullable in case of rogue/general jobs
         public DateTime CreatedAt { get; set; }
         public DateTime? DueDate { get; set; } 
         public int CreatedBy { get; set; }
