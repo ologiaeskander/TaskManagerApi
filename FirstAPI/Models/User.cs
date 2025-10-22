@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace FirstAPI.Models
+namespace TaskManager.Models
 {
     public enum Role { Manager, Employee}
     public enum Department { Technical, Marketing, HR}

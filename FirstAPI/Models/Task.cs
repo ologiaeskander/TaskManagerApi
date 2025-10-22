@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace FirstAPI.Models
+namespace TaskManager.Models
 {
     public enum Status { ToDo, InProgress, Done }
     public enum Priority { Low, Medium, High }

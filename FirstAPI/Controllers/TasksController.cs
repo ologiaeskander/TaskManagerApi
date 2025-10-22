@@ -1,9 +1,9 @@
-﻿using FirstAPI.Models;
+﻿using TaskManager.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Task = FirstAPI.Models.Task;
+using Task = TaskManager.Models.Task;
 
-namespace FirstAPI.Controllers
+namespace TaskManager.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -22,6 +22,9 @@ namespace FirstAPI.Controllers
             //Some SQL return where command to get specific tasks, etc...
             return Ok(1); //todo also temporary
         }
-        //[HttpPost]
+        //[HttpPost] for adding
+        //[HttpPut] for updating
+        //Deleting
+
     }
 }

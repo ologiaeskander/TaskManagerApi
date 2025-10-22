@@ -1,8 +1,8 @@
-@FirstAPI_HostAddress = http://localhost:5219
+@TaskManager_HostAddress = http://localhost:5219
 
-GET {{FirstAPI_HostAddress}}/weatherforecast/
+GET {{TaskManager_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###
-GET {{FirstAPI_HostAddress}}/api/tasks/
+GET {{TaskManager_HostAddress}}/api/tasks/
 Accept: application/json
