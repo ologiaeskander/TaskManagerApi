@@ -7,12 +7,16 @@ namespace TaskManagerApi.Models
     public class User
     {
         public int Id { get; set; }
-        public required string FullName { get; set; } = string.Empty;
-        public required string Username { get; set; } = string.Empty;
-        public required string Password { get; set; } = string.Empty; //todo hash this later
-        public required string Email { get; set; } = string.Empty;
-        public int Phone { get; set; }
-        public Role Role {get; set;} 
-        public Department Department { get; set;}
+        [Required]
+        public string FullName { get; set; } = string.Empty;
+        [Required]
+        public string Username { get; set; } = string.Empty;
+        [Required]
+        public string Password { get; set; } = string.Empty; //todo hash this later
+        [Required]
+        public string Email { get; set; } = string.Empty;
+        public int? Phone { get; set; }
+        public Role? Role {get; set;} 
+        public Department? Department { get; set;}
     }
 }

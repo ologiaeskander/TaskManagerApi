@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TaskManagerApi.Models
 {
@@ -8,14 +9,23 @@ namespace TaskManagerApi.Models
     public class Job
     {
         public int Id { get; set; }
-        public required string Title { get; set; } = string.Empty;
+        [Required]
+        public string Title { get; set; } = string.Empty;
         public string? Description { get; set; }
         public Status Status { get; set; }
         public Priority Priority { get; set; }
-        public int AssignedToUserId { get; set; }
-        public int? ProjectId { get; set; } //nullable in case of rogue/general jobs
         public DateTime CreatedAt { get; set; }
-        public DateTime? DueDate { get; set; } 
-        public int CreatedBy { get; set; }
+        public DateTime? DueDate { get; set; }
+        //Relationships
+        [ForeignKey("AssignedToUser")]
+        public int? AssignedToUserId { get; set; }
+        public User? AssignedToUser { get; set; }
+        [ForeignKey("Project")]
+        public int? ProjectId { get; set; }
+        public Project? Project { get; set; }
+
+        [ForeignKey("Creator")]
+        public int CreatorId { get; set; }
+        public User Creator { get; set; } = null!;
     }
 }
