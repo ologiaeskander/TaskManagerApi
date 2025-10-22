@@ -26,6 +26,6 @@ namespace TaskManagerApi.Models
 
         [ForeignKey("Creator")]
         public int CreatorId { get; set; }
-        public User Creator { get; set; } = null!;
+        public User? Creator { get; set; }
     }
 }

@@ -19,7 +19,7 @@ namespace TaskManagerApi.Controllers
 
         // GET all jobs
         [HttpGet]
-        public async Task<ActionResult<List<Job>>> GetJobs()
+        public async Task<ActionResult<IEnumerable<Job>>> GetJobs()
         {
             var jobs = await _context.Jobs.ToListAsync();
             return Ok(jobs);

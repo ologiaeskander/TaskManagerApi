@@ -1,8 +1,24 @@
 @TaskManager_HostAddress = http://localhost:5219
 
-GET {{TaskManager_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
 GET {{TaskManager_HostAddress}}/api/jobs/
 Accept: application/json
+###
+
+GET {{TaskManager_HostAddress}}/api/jobs/2
+Accept: application/json
+###
+
+POST {{TaskManager_HostAddress}}/api/jobs
+Content-Type: application/json
+Accept: application/json
+
+{
+    "title": "Implement authentication",
+    "status": 0,
+    "priority": 2,
+    "createdAt": "2025-10-21T12:00:00Z",
+    "dueDate": "2025-10-25T12:00:00Z",
+    "assignedToUserId": 2,
+    "projectId": 1,
+    "creatorId": 1
+}
