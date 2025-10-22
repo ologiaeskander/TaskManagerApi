@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace TaskManager.Models
+namespace TaskManagerApi.Models
 {
     public enum Status { ToDo, InProgress, Done }
     public enum Priority { Low, Medium, High }
@@ -8,8 +8,7 @@ namespace TaskManager.Models
     public class Job
     {
         public int Id { get; set; }
-        [Required]
-        public string Title { get; set; } = string.Empty;
+        public required string Title { get; set; } = string.Empty;
         public string? Description { get; set; }
         public Status Status { get; set; }
         public Priority Priority { get; set; }

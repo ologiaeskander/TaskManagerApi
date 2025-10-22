@@ -1,9 +1,8 @@
-﻿using TaskManager.Models;
+﻿using TaskManagerApi.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Job = TaskManager.Models.Job;
 
-namespace TaskManager.Controllers
+namespace TaskManagerApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
