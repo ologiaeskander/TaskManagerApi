@@ -70,6 +70,24 @@ namespace TaskManagerApi.Controllers
             return Ok(jobs);
         }
 
+        // GET job(s) by title
+        [HttpGet("search")]
+        public async Task<ActionResult<IEnumerable<Job>>> GetJobsByTitle([FromQuery] string title)
+        {
+            if (string.IsNullOrWhiteSpace(title))
+                return BadRequest("Title parameter is required.");
+
+            var jobs = await _context.Jobs
+                .Where(j => j.Title.Contains(title))
+                .ToListAsync();
+
+            if (!jobs.Any())
+                return NotFound($"No jobs found containing '{title}'.");
+
+            return Ok(jobs);
+        }
+
+
 
         // POST (create a new job)
         [HttpPost]
@@ -77,6 +95,8 @@ namespace TaskManagerApi.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState); //todo might specify error responses later
+
+            job.CreatedAt = DateTime.UtcNow; // auto-set timestamp
 
             _context.Jobs.Add(job);
             await _context.SaveChangesAsync();

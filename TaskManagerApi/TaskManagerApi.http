@@ -1,8 +1,9 @@
 @TaskManager_HostAddress = http://localhost:5219
-
+//Is it alive?
 GET {{TaskManager_HostAddress}}/api/ping
 ###
 
+//Testing Job Controller
 GET {{TaskManager_HostAddress}}/api/jobs/
 Accept: application/json
 ###
@@ -12,6 +13,10 @@ Accept: application/json
 ###
 
 GET {{TaskManager_HostAddress}}/api/jobs?assignedToUserId=1&excludeDone=true&dueInDays=7
+###
+
+GET {{TaskManager_HostAddress}}/api/jobs/search?title=App
+Accept: application/json
 ###
 
 POST {{TaskManager_HostAddress}}/api/jobs
@@ -28,3 +33,38 @@ Accept: application/json
     "projectId": 1,
     "creatorId": 1
 }
+###
+
+//Testing Project Controller
+
+GET {{TaskManager_HostAddress}}/api/projects/
+Accept: application/json
+###
+
+GET {{TaskManager_HostAddress}}/api/projects/2
+Accept: application/json
+###
+
+GET {{TaskManager_HostAddress}}/api/projects/search?name=App
+Accept: application/json
+###
+
+
+POST {{TaskManager_HostAddress}}/api/projects
+Content-Type: application/json
+{
+  "name": "New Marketing Campaign",
+  "description": "Launch a new social media campaign",
+  "createdBy": 2
+}
+###
+
+PUT {{TaskManager_HostAddress}}/api/projects/3
+Content-Type: application/json
+{
+  "id": 3,
+  "name": "Updated Marketing Campaign",
+  "description": "Launch an updated social media campaign",
+  "createdBy": 2
+}
+###
