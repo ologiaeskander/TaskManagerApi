@@ -17,13 +17,13 @@ namespace TaskManagerApi.Controllers
             _context = context;
         }
 
-        // GET all jobs
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Job>>> GetJobs()
-        {
-            var jobs = await _context.Jobs.ToListAsync();
-            return Ok(jobs);
-        }
+        //// GET all jobs
+        //[HttpGet]
+        //public async Task<ActionResult<IEnumerable<Job>>> GetJobs()
+        //{
+        //    var jobs = await _context.Jobs.ToListAsync();
+        //    return Ok(jobs);
+        //}
 
         // GET job by ID
         [HttpGet("{id}")]
@@ -35,6 +35,41 @@ namespace TaskManagerApi.Controllers
 
             return Ok(job);
         }
+
+        //GET job by Parameters
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Job>>> GetJobs(
+            [FromQuery] int? assignedToUserId,
+            [FromQuery] Status? status,
+            [FromQuery] Priority? priority,
+            [FromQuery] bool? excludeDone,
+            [FromQuery] DateTime? dueBefore,
+            [FromQuery] DateTime? dueAfter)
+        {
+            var query = _context.Jobs.AsQueryable();
+
+            if (assignedToUserId.HasValue)
+                query = query.Where(j => j.AssignedToUserId == assignedToUserId.Value);
+
+            if (status.HasValue)
+                query = query.Where(j => j.Status == status.Value);
+
+            if (priority.HasValue)
+                query = query.Where(j => j.Priority == priority.Value);
+
+            if (excludeDone.HasValue && excludeDone.Value)
+                query = query.Where(j => j.Status != Status.Done);
+
+            if (dueBefore.HasValue)
+                query = query.Where(j => j.DueDate.HasValue && j.DueDate.Value <= dueBefore.Value);
+
+            if (dueAfter.HasValue)
+                query = query.Where(j => j.DueDate.HasValue && j.DueDate.Value >= dueAfter.Value);
+
+            var jobs = await query.ToListAsync();
+            return Ok(jobs);
+        }
+
 
         // POST (create a new job)
         [HttpPost]

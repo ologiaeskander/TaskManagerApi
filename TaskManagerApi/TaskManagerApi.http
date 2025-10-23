@@ -1,11 +1,17 @@
 @TaskManager_HostAddress = http://localhost:5219
 
+GET {{TaskManager_HostAddress}}/api/ping
+###
+
 GET {{TaskManager_HostAddress}}/api/jobs/
 Accept: application/json
 ###
 
 GET {{TaskManager_HostAddress}}/api/jobs/2
 Accept: application/json
+###
+
+GET {{TaskManager_HostAddress}}/api/jobs?assignedToUserId=1&excludeDone=true&dueInDays=7
 ###
 
 POST {{TaskManager_HostAddress}}/api/jobs

@@ -16,7 +16,7 @@ namespace TaskManagerApi.Data
                     Id = 1, 
                     FullName = "Youssef Nabil",
                     Username = "youssef",
-                    Password = "hashed123",
+                    Password = "hashed123", //can't hash dynamically in HasData, it upsets EF
                     Email = "youssef@example.com",
                     Phone = 1234567890,
                     Role = Role.Manager,
@@ -26,7 +26,7 @@ namespace TaskManagerApi.Data
                     Id = 2,
                     FullName = "Sara Magued",
                     Username = "sara",
-                    Password = "hashed456",
+                    Password = "hashed456", //can't hash dynamically in HasData, it upsets EF
                     Email = "sara@example.com",
                     Phone = 987654321,
                     Role = Role.Employee,
