@@ -31,12 +31,11 @@ namespace TaskManagerApi.Controllers
         // GET all projects (with optional filtering by creator)
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Project>>> GetProjects(
-            [FromQuery] int? createdBy)
+            [FromQuery] string? creatorId)
         {
             var query = _context.Projects.AsQueryable();
 
-            if (createdBy.HasValue)
-                query = query.Where(j => j.CreatedBy == createdBy.Value);
+            query = query.Where(j => j.CreatorId == creatorId);
 
             var projects = await query.ToListAsync();
             return Ok(projects);

@@ -39,7 +39,7 @@ namespace TaskManagerApi.Controllers
         //GET job by Parameters
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Job>>> GetJobs(
-            [FromQuery] int? assignedToUserId,
+            [FromQuery] string? assignedToUserId,
             [FromQuery] Status? status,
             [FromQuery] Priority? priority,
             [FromQuery] bool? excludeDone,
@@ -48,8 +48,7 @@ namespace TaskManagerApi.Controllers
         {
             var query = _context.Jobs.AsQueryable();
 
-            if (assignedToUserId.HasValue)
-                query = query.Where(j => j.AssignedToUserId == assignedToUserId.Value);
+            query = query.Where(j => j.AssignedToUserId == assignedToUserId);
 
             if (status.HasValue)
                 query = query.Where(j => j.Status == status.Value);

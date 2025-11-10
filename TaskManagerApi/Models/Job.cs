@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Identity;
+using YourProjectName.Models;
 
 namespace TaskManagerApi.Models
 {
@@ -18,14 +20,15 @@ namespace TaskManagerApi.Models
         public DateTime? DueDate { get; set; }
         //Relationships
         [ForeignKey("AssignedToUser")]
-        public int? AssignedToUserId { get; set; }
-        public User? AssignedToUser { get; set; }
+        public string? AssignedToUserId { get; set; }
+        public ApplicationUser? AssignedToUser { get; set; }
         [ForeignKey("Project")]
         public int? ProjectId { get; set; }
         public Project? Project { get; set; }
 
         [ForeignKey("Creator")]
-        public int CreatorId { get; set; }
-        public User? Creator { get; set; }
+        [Required]
+        public required string CreatorId { get; set; }
+        public ApplicationUser? Creator { get; set; }
     }
 }

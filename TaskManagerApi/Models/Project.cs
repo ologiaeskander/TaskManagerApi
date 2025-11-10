@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using TaskManagerApi.Data;
+using YourProjectName.Models;
 
 namespace TaskManagerApi.Models
 {
@@ -9,7 +11,10 @@ namespace TaskManagerApi.Models
         [Required]
         public string Name { get; set; } = string.Empty;
         public string? Description { get; set; }
-        public int CreatedBy { get; set; }
+        [ForeignKey("Creator")]
+        [Required]
+        public required string CreatorId { get; set; }
+        public ApplicationUser? Creator { get; set; }
         public DateTime CreatedAt { get; set; }
     }
 }
