@@ -17,6 +17,28 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.R
 
 var app = builder.Build();
 
+// Seed data
+using (var scope = app.Services.CreateScope())
+{
+    try
+    {
+        await DataSeeder.SeedAsync(scope.ServiceProvider);
+    }
+    catch (Exception ex)
+    {
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "Seeding failed");
+    }
+}
+
+// Then your other middleware
+app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
+app.MapControllers();
+
+app.Run();
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
