@@ -3,23 +3,34 @@ using TaskManagerApi.Data;
 using Microsoft.AspNetCore.Identity;
 using YourProjectName.Models;
 using TaskManagerApi.Data.Repositories;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-builder.Services.AddScoped<IJobRepository, JobRepository>();
-builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
 
 // Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
-builder.Services.AddDbContext<TaskManagerContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("MainConnection")));
-builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<TaskManagerContext>();
+
+// Remove this line - it conflicts with Swashbuckle
+// builder.Services.AddOpenApi();
+
+// Your other services
+builder.Services.AddDbContext<TaskManagerContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("MainConnection")));
+builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
+    options.SignIn.RequireConfirmedAccount = true)
+    .AddEntityFrameworkStores<TaskManagerContext>();
 
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IJobRepository, JobRepository>();
 builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
+
+// Swagger configuration
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
+});
+
 var app = builder.Build();
 
 // Seed data
@@ -36,24 +47,18 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-// Then your other middleware
-app.UseHttpsRedirection();
-app.UseAuthentication();
-app.UseAuthorization();
-app.MapControllers();
-
-app.Run();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+// Configure the HTTP request pipeline
+// Remove the environment check or fix the middleware order
+app.UseSwagger();
+app.UseSwaggerUI(c =>
 {
-    app.MapOpenApi();
-}
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API v1");
+    c.RoutePrefix = "swagger"; // Explicitly set the route
+});
 
 app.UseHttpsRedirection();
-
+app.UseRouting(); // Add this if missing
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();
