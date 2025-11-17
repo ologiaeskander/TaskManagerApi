@@ -58,6 +58,7 @@ app.UseSwaggerUI(c =>
 
 app.UseHttpsRedirection();
 app.UseRouting(); // Add this if missing
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
