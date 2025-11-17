@@ -16,10 +16,16 @@ namespace TaskManagerApi.Controllers
         }
     
     [HttpPost("register")]
-        public async Task<ActionResult> RegisterAsync(RegisterModel model)
+    public async Task<ActionResult> RegisterAsync(RegisterModel model)
         {
 
             var result = await _userService.RegisterAsync(model);
+            return Ok(result);
+        }
+    [HttpPost("token")]
+    public async Task<IActionResult> GetTokenAsync(TokenRequestModel model)
+        {
+            var result = await _userService.GetTokenAsync(model);
             return Ok(result);
         }
     }
