@@ -20,7 +20,6 @@ namespace TaskManagerApi.Controllers
         [HttpPost("register")]
         public async Task<ActionResult> RegisterAsync(RegisterModel model)
         {
-
             var result = await _userService.RegisterAsync(model);
             return Ok(result);
         }

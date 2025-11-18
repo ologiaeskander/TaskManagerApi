@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using TaskManagerApi.Data.Repositories;
 using Microsoft.OpenApi.Models;
 using TaskManagerApi.Models;
+using TaskManagerApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,13 +17,17 @@ builder.Services.AddControllers();
 // Your other services
 builder.Services.AddDbContext<TaskManagerContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("MainConnection")));
-builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
-    options.SignIn.RequireConfirmedAccount = true)
-    .AddEntityFrameworkStores<TaskManagerContext>();
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+{
+    options.SignIn.RequireConfirmedAccount = true;
+})
+.AddEntityFrameworkStores<TaskManagerContext>()
+.AddDefaultTokenProviders();
 
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IJobRepository, JobRepository>();
 builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 // Swagger configuration
 builder.Services.AddEndpointsApiExplorer();
