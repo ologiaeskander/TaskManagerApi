@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using TaskManagerApi.Models;
 using TaskManagerApi.Services;
 using RegisterModel = TaskManagerApi.Models.RegisterModel;
-//using RegisterModel = TaskManagerApi.Areas.Identity.Pages.Account.RegisterModel;
 
 namespace TaskManagerApi.Controllers
 {
@@ -29,11 +28,11 @@ namespace TaskManagerApi.Controllers
             var result = await _userService.GetTokenAsync(model);
             return Ok(result);
         }
-        //[HttpPost("login")]
-        //public async Task<ActionResult> LoginASync(LoginModel model)
-        //{
-        //    var result = await _userService.LoginASync(model);
-        //    return Ok(result);
-        //}
+        [HttpPost("login")]
+        public async Task<ActionResult> LoginAsync(TokenRequestModel model)
+        {
+            var result = await _userService.LoginAsync(model);
+            return Ok(result);
+        }
     }
 }

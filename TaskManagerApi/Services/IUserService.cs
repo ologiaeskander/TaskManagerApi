@@ -8,6 +8,6 @@ namespace TaskManagerApi.Services
     {
         Task<string> RegisterAsync(RegisterModel model);
         Task<AuthenticationModel> GetTokenAsync(TokenRequestModel model);
-        //Task<LoginModel> LoginAsync(LoginModel model);
+        Task<AuthenticationModel> LoginAsync(TokenRequestModel model);
     }
 }
