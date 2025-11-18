@@ -1,4 +1,6 @@
-﻿using TaskManagerApi.Models;
+﻿using Microsoft.AspNetCore.Identity.UI.V5.Pages.Account.Internal;
+using TaskManagerApi.Models;
+using RegisterModel = TaskManagerApi.Models.RegisterModel;
 
 namespace TaskManagerApi.Services
 {
@@ -6,5 +8,6 @@ namespace TaskManagerApi.Services
     {
         Task<string> RegisterAsync(RegisterModel model);
         Task<AuthenticationModel> GetTokenAsync(TokenRequestModel model);
+        //Task<LoginModel> LoginAsync(LoginModel model);
     }
 }

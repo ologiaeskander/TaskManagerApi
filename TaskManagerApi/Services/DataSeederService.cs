@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using TaskManagerApi.Data;
 using TaskManagerApi.Models;
-using YourProjectName.Models;
 
 public static class DataSeeder
 {

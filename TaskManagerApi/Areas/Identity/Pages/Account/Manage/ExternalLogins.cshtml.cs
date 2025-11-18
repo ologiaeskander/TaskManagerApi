@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using YourProjectName.Models;
+using TaskManagerApi.Models;
 
 namespace TaskManagerApi.Areas.Identity.Pages.Account.Manage
 {

@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using TaskManagerApi.Data;
 using Microsoft.AspNetCore.Identity;
-using YourProjectName.Models;
 using TaskManagerApi.Data.Repositories;
 using Microsoft.OpenApi.Models;
+using TaskManagerApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 

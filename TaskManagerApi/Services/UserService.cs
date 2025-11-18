@@ -7,7 +7,6 @@ using System.Net;
 using System.Security.Claims;
 using System.Text;
 using TaskManagerApi.Models;
-using YourProjectName.Models;
 
 namespace TaskManagerApi.Services
 {
@@ -104,5 +103,26 @@ namespace TaskManagerApi.Services
                 signingCredentials: signingCredentials);
             return jwtSecurityToken;
         }
+
+        //public async Task<string> LoginAsync(RegisterModel model)
+        //{
+        //    var user = new ApplicationUser
+        //    {
+        //        UserName = model.Username,
+        //        Email = model.Email,
+        //        FirstName = model.FirstName,
+        //        LastName = model.LastName
+        //    };
+        //    var userWithSameEmail = await _userManager.FindByEmailAsync(model.Email);
+        //    if (userWithSameEmail == null)
+        //    {
+        //        var result = await _userManager.CreateAsync(user, model.Password);
+        //        return $"User Registered with username {user.UserName}";
+        //    }
+        //    else
+        //    {
+        //        return $"Email {user.Email} is already registered.";
+        //    }
+        //}
     }
 }

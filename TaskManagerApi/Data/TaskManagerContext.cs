@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using TaskManagerApi.Models;
-using YourProjectName.Models;
 
 namespace TaskManagerApi.Data
 {
