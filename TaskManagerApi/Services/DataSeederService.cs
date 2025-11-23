@@ -155,5 +155,26 @@ public static class DataSeeder
             await userManager.CreateAsync(defaultUser, Authorization.default_password);
             await userManager.AddToRoleAsync(defaultUser, Authorization.default_role.ToString());
         }
+        Console.WriteLine("=== DEFAULT USER CREATED ===");
     }
+    public static async Task SeedRolesAsync(IServiceProvider serviceProvider)
+    {
+        using (var scope = serviceProvider.CreateScope())
+        {
+            var scopedProvider = scope.ServiceProvider;
+            var roleManager = scopedProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+            string[] roleNames = { "Administrator", "Moderator", "User" };
+            foreach (var roleName in roleNames)
+            {
+                if (!await roleManager.RoleExistsAsync(roleName))
+                {
+                    await roleManager.CreateAsync(new IdentityRole(roleName));
+                }
+            }
+            Console.WriteLine("=== ROLES SEEDED ===");
+        }
+    }
+    //await SeedRolesAsync(scope.ServiceProvider);
+
 }

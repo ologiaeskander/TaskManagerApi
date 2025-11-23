@@ -11,9 +11,6 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllers();
 
-// Remove this line - it conflicts with Swashbuckle
-// builder.Services.AddOpenApi();
-
 // Your other services
 builder.Services.AddDbContext<TaskManagerContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("MainConnection")));
@@ -36,6 +33,11 @@ builder.Services.AddSwaggerGen(c =>
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
 });
 
+//Identity roles
+//builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+//    .AddEntityFrameworkStores<TaskManagerContext>()
+//    .AddDefaultTokenProviders();
+
 var app = builder.Build();
 
 // Seed data
@@ -51,6 +53,9 @@ using (var scope = app.Services.CreateScope())
         logger.LogError(ex, "Seeding failed");
     }
 }
+//Seed Roles
+await DataSeeder.SeedRolesAsync(app.Services);
+//await DataSeeder.SeedEssentialsAsync(app.Services);
 
 // Configure the HTTP request pipeline
 // Remove the environment check or fix the middleware order
