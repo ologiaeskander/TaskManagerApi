@@ -4,8 +4,8 @@ namespace TaskManagerApi.Models
 {
     public class TokenRequestModel
     {
-        [Required]
-        public required string Email { get; set; }
+        public string Email { get; set; }
+        public string UserName { get; set; }
         [Required]
         public required string Password { get; set; }
     }

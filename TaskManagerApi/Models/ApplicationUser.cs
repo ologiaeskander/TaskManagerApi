@@ -7,7 +7,7 @@ namespace TaskManagerApi.Models
     {
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
-        public Roles Role { get; set; }
+        public Roles Role { get; set; } = Roles.User;
         public byte[]? ProfilePicture { get; set; }
     }
 }

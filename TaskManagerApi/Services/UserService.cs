@@ -7,6 +7,7 @@ using System.Net;
 using System.Security.Claims;
 using System.Text;
 using TaskManagerApi.Models;
+using static TaskManagerApi.Models.Authorization;
 
 namespace TaskManagerApi.Services
 {
@@ -36,7 +37,16 @@ namespace TaskManagerApi.Services
             if (userWithSameEmail == null)
             {
                 var result = await _userManager.CreateAsync(user, model.Password);
-                return $"User Registered with username {user.UserName}";
+                if (result.Succeeded)
+                {
+                    // Add user to database
+                    await _userManager.AddToRoleAsync(user, Roles.User.ToString());
+                    return $"User Registered with username {user.UserName}";
+                }
+                else
+                {
+                    return $"Error: {string.Join(", ", result.Errors.Select(e => e.Description))}";
+                }
             }
             else
             {
@@ -107,11 +117,24 @@ namespace TaskManagerApi.Services
         public async Task<AuthenticationModel> LoginAsync(TokenRequestModel model)
         {
             var authenticationModel = new AuthenticationModel();
-            var user = await _userManager.FindByEmailAsync(model.Email);
+            ApplicationUser? user = null;
+
+            // Check if the user exists by email  
+            if (!string.IsNullOrEmpty(model.Email))
+            {
+                user = await _userManager.FindByEmailAsync(model.Email);
+            }
+
+            // If not found by email, check by username  
+            if (user == null && !string.IsNullOrEmpty(model.UserName))
+            {
+                user = _userManager.Users.FirstOrDefault(u => u.UserName == model.UserName);
+            }
+
             if (user == null)
             {
                 authenticationModel.IsAuthenticated = false;
-                authenticationModel.Message = "Invalid email or password.";
+                authenticationModel.Message = "Invalid email or username.";
                 return authenticationModel;
             }
 
@@ -119,7 +142,7 @@ namespace TaskManagerApi.Services
             if (!passwordValid)
             {
                 authenticationModel.IsAuthenticated = false;
-                authenticationModel.Message = "Invalid email or password.";
+                authenticationModel.Message = "Invalid password.";
                 return authenticationModel;
             }
 
