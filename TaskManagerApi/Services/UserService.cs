@@ -10,6 +10,7 @@ using System.Net;
 using System.Security.Claims;
 using System.Text;
 using TaskManagerApi.Models;
+using TaskManagerApi.Services.Interfaces;
 using static TaskManagerApi.Models.Authorization;
 
 namespace TaskManagerApi.Services
@@ -60,11 +61,23 @@ namespace TaskManagerApi.Services
         public async Task<AuthenticationModel> GetTokenAsync(TokenRequestModel model)
         {
             var authenticationModel = new AuthenticationModel();
-            var user = await _userManager.FindByEmailAsync(model.Email);
+            var user = await _userManager.FindByEmailAsync(model.EmailOrUserName);
+
+            // Check if the user exists by email  
+            if (!string.IsNullOrEmpty(model.EmailOrUserName))
+            {
+                user = await _userManager.FindByEmailAsync(model.EmailOrUserName);
+            }
+
+            // If not found by email, check by username  
+            if (user == null && !string.IsNullOrEmpty(model.EmailOrUserName))
+            {
+                user = _userManager.Users.FirstOrDefault(u => u.UserName == model.EmailOrUserName);
+            }
             if (user == null)
             {
                 authenticationModel.IsAuthenticated = false;
-                authenticationModel.Message = $"No Accounts Registered with {model.Email}.";
+                authenticationModel.Message = $"No Accounts Registered with {model.EmailOrUserName}.";
                 return authenticationModel;
             }
             if (await _userManager.CheckPasswordAsync(user, model.Password))
@@ -123,15 +136,15 @@ namespace TaskManagerApi.Services
             ApplicationUser? user = null;
 
             // Check if the user exists by email  
-            if (!string.IsNullOrEmpty(model.Email))
+            if (!string.IsNullOrEmpty(model.EmailOrUserName))
             {
-                user = await _userManager.FindByEmailAsync(model.Email);
+                user = await _userManager.FindByEmailAsync(model.EmailOrUserName);
             }
 
             // If not found by email, check by username  
-            if (user == null && !string.IsNullOrEmpty(model.UserName))
+            if (user == null && !string.IsNullOrEmpty(model.EmailOrUserName))
             {
-                user = _userManager.Users.FirstOrDefault(u => u.UserName == model.UserName);
+                user = _userManager.Users.FirstOrDefault(u => u.UserName == model.EmailOrUserName);
             }
 
             if (user == null)

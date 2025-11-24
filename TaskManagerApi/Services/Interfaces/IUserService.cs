@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using TaskManagerApi.Models;
 using RegisterModel = TaskManagerApi.Models.RegisterModel;
 
-namespace TaskManagerApi.Services
+namespace TaskManagerApi.Services.Interfaces
 {
     public interface IUserService
     {

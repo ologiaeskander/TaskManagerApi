@@ -5,6 +5,7 @@ using TaskManagerApi.Data.Repositories;
 using Microsoft.OpenApi.Models;
 using TaskManagerApi.Models;
 using TaskManagerApi.Services;
+using TaskManagerApi.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
