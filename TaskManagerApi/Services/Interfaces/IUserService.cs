@@ -10,7 +10,5 @@ namespace TaskManagerApi.Services.Interfaces
         Task<string> RegisterAsync(RegisterModel model);
         Task<AuthenticationModel> GetTokenAsync(TokenRequestModel model);
         Task<AuthenticationModel> LoginAsync(TokenRequestModel model);
-        Task<IActionResult> ManageAsync(string userId);
-        Task ManageRoleAsync(string userId, string role);
     }
 }
