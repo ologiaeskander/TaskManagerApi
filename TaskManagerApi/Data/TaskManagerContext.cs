@@ -8,8 +8,8 @@ namespace TaskManagerApi.Data
     public class TaskManagerContext :IdentityDbContext<ApplicationUser>
     {
         public TaskManagerContext(DbContextOptions<TaskManagerContext> options) : base(options) { }
-        public DbSet<Job> Jobs { get; set; }
-        public DbSet<Project> Projects { get; set; }
+        public DbSet<JobModel> Jobs { get; set; }
+        public DbSet<ProjectModel> Projects { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

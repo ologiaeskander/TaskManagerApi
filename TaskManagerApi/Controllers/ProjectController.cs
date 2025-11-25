@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using TaskManagerApi.Data.Repositories;
 using TaskManagerApi.Models;
 
@@ -6,6 +7,7 @@ namespace TaskManagerApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ProjectsController : ControllerBase
     {
         private readonly IProjectRepository _projectRepository;
@@ -17,7 +19,7 @@ namespace TaskManagerApi.Controllers
 
         // GET project by ID
         [HttpGet("{id}")]
-        public async Task<ActionResult<Project>> GetProject(int id)
+        public async Task<ActionResult<ProjectModel>> GetProject(int id)
         {
             var project = await _projectRepository.GetByIdAsync(id);
             
@@ -26,7 +28,7 @@ namespace TaskManagerApi.Controllers
 
         // GET all projects with optional filtering
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Project>>> GetProjects(
+        public async Task<ActionResult<IEnumerable<ProjectModel>>> GetProjects(
             [FromQuery] string? creatorId)
         {
             var projects = await _projectRepository.GetAllAsync(
@@ -40,7 +42,7 @@ namespace TaskManagerApi.Controllers
 
         // GET projects by name search
         [HttpGet("search")]
-        public async Task<ActionResult<IEnumerable<Project>>> GetProjectsByName([FromQuery] string name)
+        public async Task<ActionResult<IEnumerable<ProjectModel>>> GetProjectsByName([FromQuery] string name)
         {
             if (string.IsNullOrWhiteSpace(name))
                 return BadRequest("Name parameter is required.");
@@ -55,7 +57,7 @@ namespace TaskManagerApi.Controllers
 
         // GET projects by specific user
         [HttpGet("user/{userId}")]
-        public async Task<ActionResult<IEnumerable<Project>>> GetProjectsByUser(string userId)
+        public async Task<ActionResult<IEnumerable<ProjectModel>>> GetProjectsByUser(string userId)
         {
             var projects = await _projectRepository.GetProjectsByUserAsync(userId);
             return Ok(projects);
@@ -63,7 +65,7 @@ namespace TaskManagerApi.Controllers
 
         // POST (create a new project)
         [HttpPost]
-        public async Task<ActionResult<Project>> CreateProject(Project project)
+        public async Task<ActionResult<ProjectModel>> CreateProject(ProjectModel project)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -81,7 +83,7 @@ namespace TaskManagerApi.Controllers
 
         // PUT (update an existing project)
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateProject(int id, Project project)
+        public async Task<IActionResult> UpdateProject(int id, ProjectModel project)
         {
             if (id != project.Id)
                 return BadRequest("Project ID mismatch.");

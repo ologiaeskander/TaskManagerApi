@@ -1,10 +1,10 @@
 ﻿using TaskManagerApi.Data.Repositories;
 using TaskManagerApi.Models;
 
-public interface IJobRepository : IRepository<Job>
+public interface IJobRepository : IRepository<JobModel>
 {
     // Job-specific methods
-    Task<IEnumerable<Job>> GetJobsByStatusAsync(Status status);
-    Task<IEnumerable<Job>> GetJobsByUserAsync(string userId);
-    Task<IEnumerable<Job>> GetOverdueJobsAsync();
+    Task<IEnumerable<JobModel>> GetJobsByStatusAsync(Status status);
+    Task<IEnumerable<JobModel>> GetJobsByUserAsync(string userId);
+    Task<IEnumerable<JobModel>> GetOverdueJobsAsync();
 }

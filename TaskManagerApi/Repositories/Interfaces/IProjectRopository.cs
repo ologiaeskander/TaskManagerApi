@@ -1,8 +1,8 @@
 ﻿using TaskManagerApi.Data.Repositories;
 using TaskManagerApi.Models;
 
-public interface IProjectRepository : IRepository<Project>
+public interface IProjectRepository : IRepository<ProjectModel>
 {
     // Project-specific methods
-    Task<IEnumerable<Project>> GetProjectsByUserAsync(string userId);
+    Task<IEnumerable<ProjectModel>> GetProjectsByUserAsync(string userId);
 }

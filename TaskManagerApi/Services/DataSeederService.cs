@@ -76,8 +76,8 @@ public static class DataSeeder
 
                     if (freshAdmin != null && freshUser != null)
                     {
-                        var project1 = new Project { Name = "Website Redesign", CreatorId = freshAdmin.Id };
-                        var project2 = new Project { Name = "API Development", CreatorId = freshUser.Id };
+                        var project1 = new ProjectModel { Name = "Website Redesign", CreatorId = freshAdmin.Id };
+                        var project2 = new ProjectModel { Name = "API Development", CreatorId = freshUser.Id };
 
                         context.Projects.AddRange(project1, project2);
                         var projectsSaved = await context.SaveChangesAsync();
@@ -87,31 +87,31 @@ public static class DataSeeder
                         var savedProjects = await context.Projects.ToListAsync();
                         Console.WriteLine($"Projects in database: {savedProjects.Count}");
 
-                        var jobs = new List<Job>
-                    {
-                        new Job
+                        var jobs = new List<JobModel>
                         {
-                            Title = "Design Homepage",
-                            Description = "Create new homepage layout",
-                            Status = Status.ToDo,
-                            Priority = Priority.High,
-                            CreatedAt = DateTime.UtcNow,
-                            CreatorId = freshAdmin.Id,
-                            ProjectId = savedProjects[0].Id,
-                            AssignedToUserId = freshUser.Id
-                        },
-                        new Job
-                        {
-                            Title = "Setup Database",
-                            Description = "Initialize database schema",
-                            Status = Status.InProgress,
-                            Priority = Priority.Medium,
-                            CreatedAt = DateTime.UtcNow,
-                            CreatorId = freshUser.Id,
-                            ProjectId = savedProjects[1].Id,
-                            AssignedToUserId = freshAdmin.Id
-                        }
-                    };
+                            new JobModel
+                            {
+                                Title = "Design Homepage",
+                                Description = "Create new homepage layout",
+                                Status = Status.ToDo,
+                                Priority = Priority.High,
+                                CreatedAt = DateTime.UtcNow,
+                                CreatorId = freshAdmin.Id,
+                                ProjectId = savedProjects[0].Id,
+                                AssignedToUserId = freshUser.Id
+                            },
+                            new JobModel
+                            {
+                                Title = "Setup Database",
+                                Description = "Initialize database schema",
+                                Status = Status.InProgress,
+                                Priority = Priority.Medium,
+                                CreatedAt = DateTime.UtcNow,
+                                CreatorId = freshUser.Id,
+                                ProjectId = savedProjects[1].Id,
+                                AssignedToUserId = freshAdmin.Id
+                            }
+                        };
 
                         context.Jobs.AddRange(jobs);
                         var jobsSaved = await context.SaveChangesAsync();
@@ -176,5 +176,4 @@ public static class DataSeeder
         }
     }
     //await SeedRolesAsync(scope.ServiceProvider);
-
 }

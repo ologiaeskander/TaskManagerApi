@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using TaskManagerApi.Data.Repositories;
 using TaskManagerApi.Models;
 
@@ -6,6 +7,7 @@ namespace TaskManagerApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class JobsController : ControllerBase
     {
         private readonly IJobRepository _jobRepository;
@@ -17,7 +19,7 @@ namespace TaskManagerApi.Controllers
 
         // GET job by ID
         [HttpGet("{id}")]
-        public async Task<ActionResult<Job>> GetJob(int id)
+        public async Task<ActionResult<JobModel>> GetJob(int id)
         {
             var job = await _jobRepository.GetByIdAsync(id);
             if (job == null)
@@ -28,7 +30,7 @@ namespace TaskManagerApi.Controllers
 
         // GET jobs with flexible filtering
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Job>>> GetJobs(
+        public async Task<ActionResult<IEnumerable<JobModel>>> GetJobs(
             [FromQuery] string? assignedToUserId,
             [FromQuery] Status? status,
             [FromQuery] Priority? priority,
@@ -54,7 +56,7 @@ namespace TaskManagerApi.Controllers
 
         // GET jobs by title search
         [HttpGet("search")]
-        public async Task<ActionResult<IEnumerable<Job>>> GetJobsByTitle([FromQuery] string title)
+        public async Task<ActionResult<IEnumerable<JobModel>>> GetJobsByTitle([FromQuery] string title)
         {
             if (string.IsNullOrWhiteSpace(title))
                 return BadRequest("Title parameter is required.");
@@ -69,7 +71,7 @@ namespace TaskManagerApi.Controllers
 
         // GET jobs by specific user
         [HttpGet("user/{userId}")]
-        public async Task<ActionResult<IEnumerable<Job>>> GetJobsByUser(string userId)
+        public async Task<ActionResult<IEnumerable<JobModel>>> GetJobsByUser(string userId)
         {
             var jobs = await _jobRepository.GetJobsByUserAsync(userId);
             return Ok(jobs);
@@ -77,7 +79,7 @@ namespace TaskManagerApi.Controllers
 
         // GET jobs by status
         [HttpGet("status/{status}")]
-        public async Task<ActionResult<IEnumerable<Job>>> GetJobsByStatus(Status status)
+        public async Task<ActionResult<IEnumerable<JobModel>>> GetJobsByStatus(Status status)
         {
             var jobs = await _jobRepository.GetJobsByStatusAsync(status);
             return Ok(jobs);
@@ -85,7 +87,7 @@ namespace TaskManagerApi.Controllers
 
         // GET overdue jobs
         [HttpGet("overdue")]
-        public async Task<ActionResult<IEnumerable<Job>>> GetOverdueJobs()
+        public async Task<ActionResult<IEnumerable<JobModel>>> GetOverdueJobs()
         {
             var jobs = await _jobRepository.GetOverdueJobsAsync();
             return Ok(jobs);
@@ -93,7 +95,7 @@ namespace TaskManagerApi.Controllers
 
         // POST (create a new job)
         [HttpPost]
-        public async Task<ActionResult<Job>> CreateJob(Job job)
+        public async Task<ActionResult<JobModel>> CreateJob(JobModel job)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -111,7 +113,7 @@ namespace TaskManagerApi.Controllers
 
         // PUT (update an existing job)
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateJob(int id, Job job)
+        public async Task<IActionResult> UpdateJob(int id, JobModel job)
         {
             if (id != job.Id)
                 return BadRequest("Job ID mismatch.");

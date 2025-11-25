@@ -2,13 +2,13 @@
 using TaskManagerApi.Data.Repositories;
 using TaskManagerApi.Models;
 
-public class JobRepository : Repository<Job>, IJobRepository
+public class JobRepository : Repository<JobModel>, IJobRepository
 {
     public JobRepository(TaskManagerContext context) : base(context)
     {
     }
 
-    public async Task<IEnumerable<Job>> GetJobsByStatusAsync(Status status)
+    public async Task<IEnumerable<JobModel>> GetJobsByStatusAsync(Status status)
     {
         return await GetAllAsync(
             filter: j => j.Status == status,
@@ -16,7 +16,7 @@ public class JobRepository : Repository<Job>, IJobRepository
         );
     }
 
-    public async Task<IEnumerable<Job>> GetJobsByUserAsync(string userId)
+    public async Task<IEnumerable<JobModel>> GetJobsByUserAsync(string userId)
     {
         return await GetAllAsync(
             filter: j => j.AssignedToUserId == userId || j.CreatorId == userId,
@@ -24,7 +24,7 @@ public class JobRepository : Repository<Job>, IJobRepository
         );
     }
 
-    public async Task<IEnumerable<Job>> GetOverdueJobsAsync()
+    public async Task<IEnumerable<JobModel>> GetOverdueJobsAsync()
     {
         return await GetAllAsync(
             filter: j => j.DueDate.HasValue && j.DueDate.Value < DateTime.Now && j.Status != Status.Done,

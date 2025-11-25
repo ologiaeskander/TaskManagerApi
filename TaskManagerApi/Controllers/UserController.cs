@@ -39,18 +39,5 @@ namespace TaskManagerApi.Controllers
             var result = await _userService.LoginAsync(model);
             return Ok(result);
         }
-        [HttpGet("manage/{userId}")]
-        public async Task<IActionResult> ManageAsync(string userId)
-        {
-            var result = await _roleService.ManageAsync(userId);
-            return Ok(result);
-        }
-
-        [HttpPut("manage/{userId}/{role}")]
-        public async Task<IActionResult> ManageRoleAsync(string userId, string role)
-        {
-            await _roleService.ManageRoleAsync(userId, role);
-            return Ok(new { Message = "Role updated successfully." });
-        }
     }
 }

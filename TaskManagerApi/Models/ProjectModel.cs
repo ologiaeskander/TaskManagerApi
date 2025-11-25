@@ -4,7 +4,7 @@ using TaskManagerApi.Data;
 
 namespace TaskManagerApi.Models
 {
-    public class Project
+    public class ProjectModel
     {
         public int Id { get; set; }
         [Required]

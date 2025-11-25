@@ -45,7 +45,7 @@ namespace TaskManagerApi.Services
                 {
                     // Add user to database
                     await _userManager.AddToRoleAsync(user, Roles.User.ToString());
-                    return $"User Registered with username {user.UserName}";
+                    return $"User Registered with username {user.UserName} and email {user.Email}";
                 }
                 else
                 {
