@@ -1,100 +1,119 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using TaskManagerApi.Data;
+using TaskManagerApi.Data.Repositories;
 using TaskManagerApi.Models;
 
 namespace TaskManagerApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ProjectsController : ControllerBase
     {
-        private readonly TaskManagerContext _context;
+        private readonly IProjectRepository _projectRepository;
 
-        public ProjectsController(TaskManagerContext context)
+        public ProjectsController(IProjectRepository projectRepository)
         {
-            _context = context;
+            _projectRepository = projectRepository;
         }
 
         // GET project by ID
         [HttpGet("{id}")]
-        public async Task<ActionResult<Project>> GetProject(int id)
+        public async Task<ActionResult<ProjectModel>> GetProject(int id)
         {
-            var project = await _context.Projects.FindAsync(id);
-            if (project == null)
-                return NotFound($"Project with ID {id} not found.");
-
+            var project = await _projectRepository.GetByIdAsync(id);
+            
             return Ok(project);
         }
 
-        // GET all projects (with optional filtering by creator)
+        // GET all projects with optional filtering
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Project>>> GetProjects(
+        public async Task<ActionResult<IEnumerable<ProjectModel>>> GetProjects(
             [FromQuery] string? creatorId)
         {
-            var query = _context.Projects.AsQueryable();
+            var projects = await _projectRepository.GetAllAsync(
+                filter: p => string.IsNullOrEmpty(creatorId) || p.CreatorId == creatorId,
+                orderBy: q => q.OrderBy(p => p.Name),
+                includeProperties: "Creator"
+            );
 
-            query = query.Where(j => j.CreatorId == creatorId);
-
-            var projects = await query.ToListAsync();
             return Ok(projects);
         }
 
-        // GET project(s) by name
+        // GET projects by name search
         [HttpGet("search")]
-        public async Task<ActionResult<IEnumerable<Project>>> GetProjectsByName([FromQuery] string name)
+        public async Task<ActionResult<IEnumerable<ProjectModel>>> GetProjectsByName([FromQuery] string name)
         {
             if (string.IsNullOrWhiteSpace(name))
                 return BadRequest("Name parameter is required.");
 
-            var projects = await _context.Projects
-                .Where(p => p.Name.Contains(name))
-                .ToListAsync();
+            var projects = await _projectRepository.GetAllAsync(
+                filter: p => p.Name.Contains(name),
+                includeProperties: "Creator"
+            );
 
-            if (!projects.Any())
-                return NotFound($"No projects found containing '{name}'.");
+            return Ok(projects);
+        }
 
+        // GET projects by specific user
+        [HttpGet("user/{userId}")]
+        public async Task<ActionResult<IEnumerable<ProjectModel>>> GetProjectsByUser(string userId)
+        {
+            var projects = await _projectRepository.GetProjectsByUserAsync(userId);
             return Ok(projects);
         }
 
         // POST (create a new project)
         [HttpPost]
-        public async Task<ActionResult<Project>> CreateProject(Project project)
+        public async Task<ActionResult<ProjectModel>> CreateProject(ProjectModel project)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            project.CreatedAt = DateTime.UtcNow; // auto-set timestamp
+            project.CreatedAt = DateTime.UtcNow;
 
-            _context.Projects.Add(project);
-            await _context.SaveChangesAsync();
+            await _projectRepository.AddAsync(project);
+            var saved = await _projectRepository.SaveChangesAsync();
+
+            if (!saved)
+                return BadRequest("Failed to create project.");
 
             return CreatedAtAction(nameof(GetProject), new { id = project.Id }, project);
         }
 
         // PUT (update an existing project)
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateProject(int id, Project project)
+        public async Task<IActionResult> UpdateProject(int id, ProjectModel project)
         {
             if (id != project.Id)
                 return BadRequest("Project ID mismatch.");
 
-            _context.Entry(project).State = EntityState.Modified;
+            var existingProject = await _projectRepository.GetByIdAsync(id);
+            if (existingProject == null)
+                return NotFound($"Project with ID {id} not found.");
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!_context.Projects.Any(e => e.Id == id))
-                    return NotFound($"Project with ID {id} not found.");
-                throw;
-            }
+            _projectRepository.Update(project);
+            var saved = await _projectRepository.SaveChangesAsync();
+
+            if (!saved)
+                return BadRequest("Failed to update project.");
 
             return NoContent();
         }
 
+        // DELETE (if you want to add this functionality)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteProject(int id)
+        {
+            var project = await _projectRepository.GetByIdAsync(id);
+            
+            await _projectRepository.DeleteAsync(id);
+            var saved = await _projectRepository.SaveChangesAsync();
+
+            if (!saved)
+                return BadRequest("Failed to delete project.");
+
+            return NoContent();
+        }
     }
 }

@@ -1,14 +1,13 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNetCore.Identity;
-using YourProjectName.Models;
 
 namespace TaskManagerApi.Models
 {
     public enum Status { ToDo, InProgress, Done }
     public enum Priority { Low, Medium, High }
 
-    public class Job
+    public class JobModel
     {
         public int Id { get; set; }
         [Required]
@@ -24,7 +23,7 @@ namespace TaskManagerApi.Models
         public ApplicationUser? AssignedToUser { get; set; }
         [ForeignKey("Project")]
         public int? ProjectId { get; set; }
-        public Project? Project { get; set; }
+        public ProjectModel? Project { get; set; }
 
         [ForeignKey("Creator")]
         [Required]

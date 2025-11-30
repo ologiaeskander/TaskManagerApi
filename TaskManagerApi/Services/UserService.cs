@@ -1,0 +1,170 @@
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+using NuGet.Common;
+using System.IdentityModel.Tokens.Jwt;
+using System.Net;
+using System.Security.Claims;
+using System.Text;
+using TaskManagerApi.Models;
+using TaskManagerApi.Services.Interfaces;
+using static TaskManagerApi.Models.Authorization;
+
+namespace TaskManagerApi.Services
+{
+    public class UserService : IUserService
+    {
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly JWT _jwt;
+
+        public UserService(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IOptions<JWT> jwt)
+        {
+            _userManager = userManager;
+            _roleManager = roleManager;
+            _jwt = jwt.Value;
+        }
+
+        public async Task<string> RegisterAsync(RegisterModel model)
+        {
+            var user = new ApplicationUser
+            {
+                UserName = model.Username,
+                Email = model.Email,
+                FirstName = model.FirstName,
+                LastName = model.LastName
+            };
+            var userWithSameEmail = await _userManager.FindByEmailAsync(model.Email);
+            if (userWithSameEmail == null)
+            {
+                var result = await _userManager.CreateAsync(user, model.Password);
+                if (result.Succeeded)
+                {
+                    // Add user to database
+                    await _userManager.AddToRoleAsync(user, Roles.User.ToString());
+                    return $"User Registered with username {user.UserName} and email {user.Email}";
+                }
+                else
+                {
+                    return $"Error: {string.Join(", ", result.Errors.Select(e => e.Description))}";
+                }
+            }
+            else
+            {
+                return $"Email {user.Email} is already registered.";
+            }
+        }
+
+        public async Task<AuthenticationModel> GetTokenAsync(TokenRequestModel model)
+        {
+            var authenticationModel = new AuthenticationModel();
+            var user = await _userManager.FindByEmailAsync(model.EmailOrUserName);
+
+            // Check if the user exists by email  
+            if (!string.IsNullOrEmpty(model.EmailOrUserName))
+            {
+                user = await _userManager.FindByEmailAsync(model.EmailOrUserName);
+            }
+
+            // If not found by email, check by username  
+            if (user == null && !string.IsNullOrEmpty(model.EmailOrUserName))
+            {
+                user = _userManager.Users.FirstOrDefault(u => u.UserName == model.EmailOrUserName);
+            }
+            if (user == null)
+            {
+                authenticationModel.IsAuthenticated = false;
+                authenticationModel.Message = $"No Accounts Registered with {model.EmailOrUserName}.";
+                return authenticationModel;
+            }
+            if (await _userManager.CheckPasswordAsync(user, model.Password))
+            {
+                authenticationModel.IsAuthenticated = true;
+                JwtSecurityToken jwtSecurityToken = await CreateJwtToken(user);
+                authenticationModel.Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
+                authenticationModel.Email = user.Email;
+                authenticationModel.UserName = user.UserName;
+                var rolesList = await _userManager.GetRolesAsync(user).ConfigureAwait(false);
+                authenticationModel.Roles = rolesList.ToList();
+                return authenticationModel;
+            }
+            authenticationModel.IsAuthenticated = false;
+            authenticationModel.Message = $"Incorrect Credentials for user {user.Email}.";
+
+            return authenticationModel;
+        }
+        private async Task<JwtSecurityToken> CreateJwtToken(ApplicationUser user)
+        {
+            var userClaims = await _userManager.GetClaimsAsync(user);
+            var roles = await _userManager.GetRolesAsync(user);
+
+            var roleClaims = new List<Claim>();
+
+            for (int i = 0; i < roles.Count; i++)
+            {
+                roleClaims.Add(new Claim("roles", roles[i]));
+            }
+
+            var claims = new[]
+            {
+        new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
+        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+        new Claim(JwtRegisteredClaimNames.Email, user.Email),
+        new Claim("uid", user.Id)
+    }
+            .Union(userClaims)
+            .Union(roleClaims);
+
+            var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwt.Key));
+            var signingCredentials = new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
+
+            var jwtSecurityToken = new JwtSecurityToken(
+                issuer: _jwt.Issuer,
+                audience: _jwt.Audience,
+                claims: claims,
+                expires: DateTime.UtcNow.AddMinutes(_jwt.DurationInMinutes),
+                signingCredentials: signingCredentials);
+            return jwtSecurityToken;
+        }
+
+        public async Task<AuthenticationModel> LoginAsync(TokenRequestModel model)
+        {
+            var authenticationModel = new AuthenticationModel();
+            ApplicationUser? user = null;
+
+            // Check if the user exists by email  
+            if (!string.IsNullOrEmpty(model.EmailOrUserName))
+            {
+                user = await _userManager.FindByEmailAsync(model.EmailOrUserName);
+            }
+
+            // If not found by email, check by username  
+            if (user == null && !string.IsNullOrEmpty(model.EmailOrUserName))
+            {
+                user = _userManager.Users.FirstOrDefault(u => u.UserName == model.EmailOrUserName);
+            }
+
+            if (user == null)
+            {
+                authenticationModel.IsAuthenticated = false;
+                authenticationModel.Message = "Invalid email or username.";
+                return authenticationModel;
+            }
+
+            var passwordValid = await _userManager.CheckPasswordAsync(user, model.Password);
+            if (!passwordValid)
+            {
+                authenticationModel.IsAuthenticated = false;
+                authenticationModel.Message = "Invalid password.";
+                return authenticationModel;
+            }
+
+            authenticationModel.IsAuthenticated = true;
+            authenticationModel.Message = "Login successful.";
+            return authenticationModel;
+        }
+    }
+}
