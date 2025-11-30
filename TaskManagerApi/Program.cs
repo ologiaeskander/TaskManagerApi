@@ -6,6 +6,7 @@ using Microsoft.OpenApi.Models;
 using TaskManagerApi.Models;
 using TaskManagerApi.Services;
 using TaskManagerApi.Services.Interfaces;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,11 +23,14 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 .AddEntityFrameworkStores<TaskManagerContext>()
 .AddDefaultTokenProviders();
 
+builder.Services.AddHttpContextAccessor();
+
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IJobRepository, JobRepository>();
 builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
+builder.Services.AddScoped<IUserContext, UserContext>();
 
 // Swagger configuration
 builder.Services.AddEndpointsApiExplorer();
