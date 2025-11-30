@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using TaskManagerApi.Data.Repositories;
 using TaskManagerApi.Models;
+using MediatR;
 
 namespace TaskManagerApi.Controllers
 {
