@@ -1,20 +1,27 @@
-# Task Manager Api
+Here’s an updated, polished version of your README reflecting the **current state of TaskManagerApi**:
 
-A simple **Task Management API** built with **ASP.NET Core (.NET 8/9)** using **Entity Framework Core** and **SQL Server**.
-Allows management of **Projects** and **Jobs (Tasks)** with filtering, search, and basic CRUD operations.
+---
+
+# TaskManagerApi
+
+A **Task Management API** built with **ASP.NET Core (.NET 9)** using **Entity Framework Core** and **SQL Server**.
+Supports **Projects** and **Jobs (Tasks)** management with **CRUD operations**, **search**, **filtering**, and **role-based security**.
 
 ---
 
 ## Features
 
-* CRUD operations for **Jobs** and **Projects**
-* Filter Jobs by **assigned user, status, priority, due dates**
-* Search Projects and Jobs by **name/title**
-* Dummy data seeded via EF Core `HasData()`
+* **CRUD operations** for Projects and Jobs
+* **Filter Jobs** by assigned user, status, priority, and due dates
+* **Search Projects and Jobs** by name/title
+* **Role-based access control** (Administrator, Moderator, User)
+* **Authentication & JWT** token issuance for secure endpoints
+* **CQRS & MediatR** command/query handling for clean architecture
+* **Dummy data seeding** with initial users, roles, projects, and jobs
 
 ---
 
-### Running the API
+## Running the API
 
 1. Clone the repository:
 
@@ -23,7 +30,7 @@ git clone <repo_url>
 cd TaskManagerApi
 ```
 
-2. Restore packages:
+2. Restore NuGet packages:
 
 ```bash
 dotnet restore
@@ -49,11 +56,32 @@ dotnet ef database update
 dotnet run
 ```
 
-6. Test endpoints using your preferred HTTP client (VS Code REST Client, Postman, etc.) at:
+6. Test endpoints with Postman, VS Code REST Client, or your preferred HTTP client at:
 
 ```
 https://localhost:<port>/api/<controller>
 ```
+
+---
+
+## Authentication
+
+All endpoints (except registration/login/health) require **JWT Bearer authentication**. 
+Currently only mannually passed.
+
+* **Register a new user:**
+
+```
+POST /api/user/register
+```
+
+* **Login to obtain JWT token:**
+
+```
+POST /api/user/login
+```
+
+Include the token in requests using the `Authorization: Bearer <token>` header.
 
 ---
 
@@ -67,27 +95,26 @@ https://localhost:<port>/api/<controller>
 GET /api/projects
 ```
 
-* Get project by id:
+* Get a project by ID:
 
 ```
-GET /api/projects/id
+GET /api/projects/{id}
 ```
 
-* Search project by name:
+* Search projects by name:
 
 ```
 GET /api/projects/search?name=Website
 ```
 
-* Create a project:
+* Create a project (CQRS command handled via MediatR):
 
 ```
 POST /api/projects
 Content-Type: application/json
 {
   "name": "New Marketing Campaign",
-  "description": "Launch a new social media campaign",
-  "createdBy": 2
+  "description": "Launch a new social media campaign"
 }
 ```
 
@@ -97,12 +124,15 @@ Content-Type: application/json
 PUT /api/projects/{id}
 Content-Type: application/json
 {
-  "id": 3,
   "name": "Updated Marketing Campaign",
-  "description": "Updated description",
-  "createdBy": 2,
-  "createdAt": "2025-10-23T12:00:00Z"
+  "description": "Updated description"
 }
+```
+
+* Delete a project:
+
+```
+DELETE /api/projects/{id}
 ```
 
 ---
@@ -114,10 +144,11 @@ Content-Type: application/json
 ```
 GET /api/jobs
 ```
-* Get job by id:
+
+* Get a job by ID:
 
 ```
-GET /api/jobs/id
+GET /api/jobs/{id}
 ```
 
 * Filter jobs:
@@ -136,6 +167,7 @@ GET /api/jobs/search?title=App
 
 ```
 POST /api/jobs
+Content-Type: application/json
 {
   "title": "New Job",
   "description": "Description",
@@ -143,26 +175,66 @@ POST /api/jobs
   "priority": "Medium",
   "assignedToUserId": 2,
   "projectId": 1,
-  "creatorId": 1,
-  "createdAt": "2025-10-23T12:00:00Z",
   "dueDate": "2025-10-30T12:00:00Z"
 }
 ```
+
+* Update a job:
+
+```
+PUT /api/jobs/{id}
+Content-Type: application/json
+{
+  "title": "Updated Job",
+  "description": "Updated description",
+  "status": "InProgress",
+  "priority": "High"
+}
+```
+
+* Delete a job:
+
+```
+DELETE /api/jobs/{id}
+```
+
+> **Filtering** supports optional query parameters: `assignedToUserId`, `status`, `priority`, `excludeDone`, `dueBefore`, `dueAfter`.
+> **Search** supports partial matches (`Contains`) for Project name or Job title.
+
 ---
 
-> Note:
-> * Filtering supports optional query parameters in Jobs: `assignedToUserId`, `status`, `priority`, `excludeDone`, `dueBefore`, `dueAfter`
-> * Searching supports partial matches (`Contains`) for Project name or Job title
+## Test Credentials (Seeded Users)
+
+| Username | Full Name     | Password | Role          |
+| -------- | ------------- | -------- | ------------- |
+| user     | Default User  | Paw0rd.  | User          |
+| admin    | Administrator | Admin123 | Administrator |
+
+> Use the login endpoint to obtain a JWT token for these accounts.
 
 ---
 
-## Test Credentials (Dummy Data)
+## API Health Check
 
-You can use the following **users for testing purposes** (passwords are dummy/hashed strings in the database):
+* **Check API status:**
 
-| Username | Full Name     | Password  | Role     | Department |
-| -------- | ------------- | --------- | -------- | ---------- |
-| youssef  | Youssef Nabil | hashed123 | Manager  | Technical  |
-| sara     | Sara Magued   | hashed456 | Employee | Marketing  |
+```
+GET /api/home
+```
 
-> Note: Authentication/login endpoints are **not implemented yet**.
+Returns: `"Task Manager API is running"`
+
+* **Ping endpoint:**
+
+```
+GET /api/home/ping
+```
+
+Returns: `"pong"`
+
+---
+
+## Notes
+
+* Only the Project Create command (e.g., project/job creation) is currently handled via **CQRS + MediatR**.
+* Swagger UI includes authentication support for testing endpoints with manual JWT token passing.
