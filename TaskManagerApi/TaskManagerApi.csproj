@@ -7,7 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MediatR.Extensions.Autofac.DependencyInjection" Version="9.2.0" />
+    <PackageReference Include="MediatR" Version="9.0.0" />
+    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="9.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.11" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.10" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="9.0.10" />
@@ -36,8 +37,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Application\QueryHandlers\" />
     <Folder Include="Areas\Identity\Data\" />
-    <Folder Include="Application\Queries\" />
     <Folder Include="Migrations\" />
   </ItemGroup>
 

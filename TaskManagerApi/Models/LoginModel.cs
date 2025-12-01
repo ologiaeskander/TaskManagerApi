@@ -5,9 +5,8 @@ namespace TaskManagerApi.Models
     public class LoginModel
     {
         [Required]
-        public required string EmailOrUsername { get; set; }
+        public required string EmailOrUserName { get; set; }
         [Required]
         public required string Password { get; set; }
-
     }
 }

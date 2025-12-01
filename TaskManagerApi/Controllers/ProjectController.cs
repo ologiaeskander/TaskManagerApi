@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using TaskManagerApi.Data.Repositories;
 using TaskManagerApi.Models;
 using MediatR;
+using TaskManagerApi.Application.Commands;
 
 namespace TaskManagerApi.Controllers
 {
@@ -12,10 +13,16 @@ namespace TaskManagerApi.Controllers
     public class ProjectsController : ControllerBase
     {
         private readonly IProjectRepository _projectRepository;
+        private readonly Mediator _mediator;
 
-        public ProjectsController(IProjectRepository projectRepository)
+        //public ProjectsController(IProjectRepository projectRepository)
+        //{
+        //    _projectRepository = projectRepository;
+        //}
+
+        public ProjectsController(IMediator mediator)
         {
-            _projectRepository = projectRepository;
+            _mediator = (Mediator?)(mediator ?? throw new ArgumentNullException(nameof(mediator)));
         }
 
         // GET project by ID
@@ -64,22 +71,22 @@ namespace TaskManagerApi.Controllers
             return Ok(projects);
         }
 
-        // POST (create a new project)
         [HttpPost]
-        public async Task<ActionResult<ProjectModel>> CreateProject(ProjectModel project)
+        public async Task<IActionResult> CreateProject([FromBody] CreateProjectCommand command)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            project.CreatedAt = DateTime.UtcNow;
+            // Send the command to MediatR
+            var projectId = await _mediator.Send(command);
 
-            await _projectRepository.AddAsync(project);
-            var saved = await _projectRepository.SaveChangesAsync();
-
-            if (!saved)
-                return BadRequest("Failed to create project.");
-
-            return CreatedAtAction(nameof(GetProject), new { id = project.Id }, project);
+            // Return 201 Created with the route to the GetProject endpoint
+            return CreatedAtAction(nameof(GetProject), new { id = projectId }, new
+            {
+                Id = projectId,
+                Name = command.Name,
+                Description = command.Description
+            });
         }
 
         // PUT (update an existing project)

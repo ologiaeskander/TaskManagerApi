@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using TaskManagerApi.Models;
 using TaskManagerApi.Services;
 using TaskManagerApi.Services.Interfaces;
+using LoginModel = TaskManagerApi.Models.LoginModel;
 using RegisterModel = TaskManagerApi.Models.RegisterModel;
 //using LoginModel = TaskManagerApi.Models.LoginModel;
 
@@ -13,10 +14,12 @@ namespace TaskManagerApi.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly ITokenService _tokenService;
         private readonly IRoleService _roleService;
-        public UserController(IUserService userService, IRoleService roleService)
+        public UserController(IUserService userService, ITokenService tokenService, IRoleService roleService)
         {
             _userService = userService;
+            _tokenService = tokenService;
             _roleService = roleService;
         }
 
@@ -28,13 +31,13 @@ namespace TaskManagerApi.Controllers
             return Ok(result);
         }
         [HttpPost("token")]
-        public async Task<IActionResult> GetTokenAsync(TokenRequestModel model)
+        public async Task<IActionResult> GenerateJwtToken(ApplicationUser model)
         {
-            var result = await _userService.GetTokenAsync(model);
+            var result = await _tokenService.GenerateJwtToken(model);
             return Ok(result);
         }
         [HttpPost("login")]
-        public async Task<ActionResult> LoginAsync(TokenRequestModel model)
+        public async Task<ActionResult> LoginAsync(LoginModel model)
         {
             var result = await _userService.LoginAsync(model);
             return Ok(result);

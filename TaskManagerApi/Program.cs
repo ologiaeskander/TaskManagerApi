@@ -10,6 +10,10 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using MediatR;
+using System.Reflection;
+using TaskManagerApi.Application.Commands;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,13 +31,16 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 .AddDefaultTokenProviders();
 
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddMediatR(Assembly.GetExecutingAssembly());
 
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IJobRepository, JobRepository>();
 builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IUserContext, UserContext>();
+
 
 // Swagger configuration
 builder.Services.AddEndpointsApiExplorer();
